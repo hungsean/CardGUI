@@ -117,9 +117,10 @@ public class CardGame extends Application {
         launch();
     }
 
-    public static void shuffleArray(int[] array)
+    public static void shuffleCards(Card[] array)
     {
-        int index, temp;
+        Card temp;
+        int index;
         Random random = new Random();
         for (int i = array.length - 1; i > 0; i--)
         {
