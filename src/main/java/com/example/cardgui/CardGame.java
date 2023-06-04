@@ -1,5 +1,6 @@
 package com.example.cardgui;
 
+import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -11,16 +12,20 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Random;
 
 public class CardGame extends Application {
 
     // define card
-    private Map<Integer, Image> cardImageMap;
+    
+    HashMap<Integer, Image> cardImageMap = new HashMap<Integer,Image>();
     Card cards[];
+    int flippedCardNumber = 0;
+    int firstCardIndex = -1, secondCardIndex = -1;
     
     Image cardLion = new Image(getClass().getResourceAsStream("lion.jpg"));
     Image cardBack = new Image(getClass().getResourceAsStream("blue.jpg"));
@@ -53,12 +58,12 @@ public class CardGame extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        
         cardImageMap.put(0, cardLion);
         cardImageMap.put(1, cardApple);
         cards = new Card[cardImageMap.size() * 2];
         for (int i = 0; i < cards.length; i++) 
         {
+            cards[i] = new Card();
             cards[i].setCard(i / 2, cardImageMap.get(i / 2), cardBack);
         }
 
@@ -73,13 +78,11 @@ public class CardGame extends Application {
         });
         startBox.setSpacing(10);
         startBox.setStyle("-fx-alignment: center;");
-        Scene startScene = new Scene(startBox);
 
         // set game scene
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setHgap(10);
         gridPane.setVgap(10);
-        int flipedCardNumber = 0;
         int scoreNumber = 0;
 
         for (int i = 0; i < cards.length; i++) 
@@ -88,7 +91,8 @@ public class CardGame extends Application {
             cards[index].button.setOnAction(e -> 
             {
                 cards[index].flipCard();
-                checkCard();
+                flippedCardNumber++;
+                checkCard(index);
             });
             gridPane.add(cards[index].button, index%2, index/2);
         }
@@ -117,9 +121,37 @@ public class CardGame extends Application {
         }
     }
 
-    public void checkCard()
+    public void checkCard(int index)
     {
-        
+        if (flippedCardNumber == 1)
+        {
+            firstCardIndex = index;
+            return;
+        }
+        else if (flippedCardNumber == 2)
+        {
+            secondCardIndex = index;
+            if (cards[firstCardIndex].cardValue == cards[secondCardIndex].cardValue)
+            {
+                cards[firstCardIndex].button.setDisable(true);
+                cards[secondCardIndex].button.setDisable(true);
+                flippedCardNumber = 0;
+                firstCardIndex = -1;
+                secondCardIndex = -1;
+            }
+            else
+            {
+                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), e -> 
+                {
+                    cards[firstCardIndex].flipCard();
+                    cards[secondCardIndex].flipCard();
+                    flippedCardNumber = 0;
+                    firstCardIndex = -1;
+                    secondCardIndex = -1;
+                }));
+                timeline.play();
+            }
+        }
     }
 
 }

@@ -11,6 +11,9 @@ public class Card{
     Image cardFront;
     Image cardBack;
     int cardValue;
+    public Card()
+    {
+    }
 
     public void setCard(int cardValue, Image cardFront, Image cardBack)
     {
