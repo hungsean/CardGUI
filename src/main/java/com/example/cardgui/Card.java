@@ -13,6 +13,7 @@ public class Card{
     int cardValue;
     public Card()
     {
+        this.button = new Button();
     }
 
     public void setCard(int cardValue, Image cardFront, Image cardBack)

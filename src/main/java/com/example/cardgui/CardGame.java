@@ -133,8 +133,8 @@ public class CardGame extends Application {
             secondCardIndex = index;
             if (cards[firstCardIndex].cardValue == cards[secondCardIndex].cardValue)
             {
-                cards[firstCardIndex].button.setDisable(true);
-                cards[secondCardIndex].button.setDisable(true);
+                cards[firstCardIndex].button.setVisible(false);
+                cards[secondCardIndex].button.setVisible(false);
                 flippedCardNumber = 0;
                 firstCardIndex = -1;
                 secondCardIndex = -1;
