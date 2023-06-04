@@ -18,7 +18,7 @@ import java.util.Random;
 
 public class CardGame extends Application {
 
-    private Map<Integer, Image> cardMap;
+    private Map<Integer, Image> cardImageMap;
     // private int cardTypeNumber = 2;
     // private Image cardImage[0] = Image(getClass().getResourceAsStream("lion.jpg"));
     // private Image cardImage[1] = new Image(getClass().getResourceAsStream("apple.jpg"));
@@ -38,6 +38,7 @@ public class CardGame extends Application {
     GridPane gridPane = new GridPane();
     Label score = new Label(" / ");
     VBox gameBox = new VBox(gridPane, score);
+    Scene gamScene = new Scene(gameBox);
 
     // set end scene
 
@@ -50,12 +51,19 @@ public class CardGame extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        
+        cardImageMap.put(0, new Image(getClass().getResourceAsStream("lion.jpg")));
+        cardImageMap.put(1, new Image(getClass().getResourceAsStream("apple.jpg")));
+        Card cards[] = new Card[cardImageMap.size() * 2];
+        for (int i = 0; i < cards.length; i++) 
+        {
+            cards[i].setCard(i / 2, cardImageMap.get(i / 2), cardBack);
+        }
+
 
 
         // set start scene
 
-        startButton.setOnAction(e -> stage.setScene(scene));
+        startButton.setOnAction(e -> stage.setScene(gamScene));
         startBox.setSpacing(10);
         startBox.setStyle("-fx-alignment: center;");
         Scene startScene = new Scene(startBox);
@@ -67,8 +75,7 @@ public class CardGame extends Application {
         
 
         // set card image
-        cardMap.put(0, new Image(getClass().getResourceAsStream("lion.jpg")));
-        cardMap.put(1, new Image(getClass().getResourceAsStream("apple.jpg")));
+        
 
         int cardNumber = cardMap.size() * 2;
         int cardValueArray[] = new int[cardNumber];
@@ -110,7 +117,6 @@ public class CardGame extends Application {
         launch();
     }
 
-    //shuffle array
     public static void shuffleArray(int[] array)
     {
         int index, temp;
