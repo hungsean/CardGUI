@@ -1,8 +1,8 @@
 package com.example.cardgui;
 
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,20 +18,21 @@ import java.util.Random;
 
 public class CardGame extends Application {
 
+    // define card
     private Map<Integer, Image> cardImageMap;
-    // private int cardTypeNumber = 2;
-    // private Image cardImage[0] = Image(getClass().getResourceAsStream("lion.jpg"));
-    // private Image cardImage[1] = new Image(getClass().getResourceAsStream("apple.jpg"));
+    Card cards[];
     
+    Image cardLion = new Image(getClass().getResourceAsStream("lion.jpg"));
+    Image cardBack = new Image(getClass().getResourceAsStream("blue.jpg"));
+    Image cardApple = new Image(getClass().getResourceAsStream("apple.jpg"));
     
-
-    private Image cardBack = new Image(getClass().getResourceAsStream("blue.jpg"));
 
     // set start scene
 
     Label welcome = new Label("Welcome to card game!");
     Button startButton = new Button("Start");
     VBox startBox = new VBox(welcome, startButton);
+    Scene startScene = new Scene(startBox);
 
     // set game scene
 
@@ -47,13 +48,15 @@ public class CardGame extends Application {
     Button exitButton = new Button("Exit");
     HBox buttonBox = new HBox(endButton, exitButton);
     VBox endBox = new VBox(endLabel, buttonBox);
+    Scene endScene = new Scene(endBox);
 
 
     @Override
     public void start(Stage stage) throws IOException {
-        cardImageMap.put(0, new Image(getClass().getResourceAsStream("lion.jpg")));
-        cardImageMap.put(1, new Image(getClass().getResourceAsStream("apple.jpg")));
-        Card cards[] = new Card[cardImageMap.size() * 2];
+        
+        cardImageMap.put(0, cardLion);
+        cardImageMap.put(1, cardApple);
+        cards = new Card[cardImageMap.size() * 2];
         for (int i = 0; i < cards.length; i++) 
         {
             cards[i].setCard(i / 2, cardImageMap.get(i / 2), cardBack);
@@ -63,53 +66,36 @@ public class CardGame extends Application {
 
         // set start scene
 
-        startButton.setOnAction(e -> stage.setScene(gamScene));
+        startButton.setOnAction(e -> 
+        {
+            shuffleCards(cards);
+            stage.setScene(gamScene);
+        });
         startBox.setSpacing(10);
         startBox.setStyle("-fx-alignment: center;");
         Scene startScene = new Scene(startBox);
-
-        /*
-         * 先定義好卡片 
-         * 之後有需要時再洗牌本身
-         */
-        
-
-        // set card image
-        
-
-        int cardNumber = cardMap.size() * 2;
-        int cardValueArray[] = new int[cardNumber];
-        for (int i = 0; i < cardNumber; i++) 
-        {
-            cardValueArray[i] = i / 2;
-        }
-        shuffleArray(cardValueArray);
-
-        // debug ---
-        for (int i = 0; i < cardValueArray.length; i++) 
-        {
-            System.out.println(cardValueArray[i]);
-        }
-        // debug end ---
 
         // set game scene
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setHgap(10);
         gridPane.setVgap(10);
+        int flipedCardNumber = 0;
+        int scoreNumber = 0;
 
-        
-
-
-        Card[] cards = new Card[cardNumber];
-        for (int i = 0; i < cardNumber; i++) 
+        for (int i = 0; i < cards.length; i++) 
         {
-            cards[i].setCard(i, cardMap.get(i), cardBack);
-            gridPane.add(cards[i].button, i % 4, i / 4);
+            final int index = i;
+            cards[index].button.setOnAction(e -> 
+            {
+                cards[index].flipCard();
+                checkCard();
+            });
+            gridPane.add(cards[index].button, index%2, index/2);
         }
 
 
         stage.setTitle("Hello!");
-        stage.setScene(scene);
+        stage.setScene(startScene);
         stage.show();
     }
 
@@ -130,4 +116,10 @@ public class CardGame extends Application {
             array[i] = temp;
         }
     }
+
+    public void checkCard()
+    {
+        
+    }
+
 }
