@@ -37,7 +37,7 @@ public class CardGame extends Application {
     Label welcome = new Label("Welcome to card game!");
     Button startButton = new Button("Start");
     VBox startBox = new VBox(welcome, startButton);
-    Scene startScene = new Scene(startBox);
+    Scene startScene = new Scene(startBox, 700, 700);
 
     // set game scene
 
@@ -45,7 +45,7 @@ public class CardGame extends Application {
 
     GridPane gridPane = new GridPane();
     VBox gameBox = new VBox(gridPane);
-    Scene gamScene = new Scene(gameBox);
+    Scene gamScene = new Scene(gameBox, 700, 700);
 
     // set end scene
 
@@ -54,7 +54,7 @@ public class CardGame extends Application {
     Button exitButton = new Button("Exit");
     HBox buttonBox = new HBox(endButton, exitButton);
     VBox endBox = new VBox(endLabel, buttonBox);
-    Scene endScene = new Scene(endBox);
+    Scene endScene = new Scene(endBox, 700, 700);
 
 
     @Override
@@ -74,6 +74,19 @@ public class CardGame extends Application {
 
         startButton.setOnAction(e -> 
         {
+            score = 0;
+            flippedCardNumber = 0;
+            firstCardIndex = -1;
+            secondCardIndex = -1;
+            for(int i = 0; i < cards.length; i++)
+            {
+                final int index = i;
+                cards[index].face = false;
+                cards[index].checkFace();
+                cards[index].button.setDisable(false);
+                cards[index].button.setVisible(true);
+
+            }
             shuffleCards();
             stage.setScene(gamScene);
         });
@@ -102,12 +115,26 @@ public class CardGame extends Application {
             });
             gridPane.add(cards[index].button, index%2, index/2);
         }
+        gameBox.setSpacing(10);
+        gameBox.setStyle("-fx-alignment: center;");
 
         // set end scene
 
-        
+        endButton.setOnAction(e -> 
+        {
+            stage.setScene(startScene);
+        });
+        exitButton.setOnAction(e -> 
+        {
+            stage.close();
+        });
+        buttonBox.setSpacing(10);
+        buttonBox.setStyle("-fx-alignment: center;");
+        endBox.setSpacing(10);
+        endBox.setStyle("-fx-alignment: center;");
 
-        stage.setTitle("Hello!");
+
+        stage.setTitle("Card Game");
         stage.setScene(startScene);
         stage.show();
     }
@@ -146,36 +173,39 @@ public class CardGame extends Application {
         }
         else if (flippedCardNumber == 2)
         {
+            for(int i = 0; i < cards.length; i++)
+            {
+                cards[i].button.setDisable(true);
+            }
             secondCardIndex = index;
-            if (cards[firstCardIndex].cardValue == cards[secondCardIndex].cardValue)
+            boolean isSame = cards[firstCardIndex].cardValue == cards[secondCardIndex].cardValue;
+            if (isSame)
             {
                 score ++;
-                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), e -> 
+            }
+
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), e -> 
+            {
+                if (isSame)
                 {
                     cards[firstCardIndex].button.setVisible(false);
                     cards[secondCardIndex].button.setVisible(false);
-                    flippedCardNumber = 0;
-                    firstCardIndex = -1;
-                    secondCardIndex = -1;
-                }));
-                timeline.play();
-
-                
-            }
-            else
-            {
-                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), e -> 
+                }
+                cards[firstCardIndex].flipCard();
+                cards[secondCardIndex].flipCard();
+                flippedCardNumber = 0;
+                firstCardIndex = -1;
+                secondCardIndex = -1;
+                for(int i = 0; i < cards.length; i++)
                 {
-                    cards[firstCardIndex].flipCard();
-                    cards[secondCardIndex].flipCard();
-                    cards[firstCardIndex].button.setDisable(false);
-                    cards[secondCardIndex].button.setDisable(false);
-                    flippedCardNumber = 0;
-                    firstCardIndex = -1;
-                    secondCardIndex = -1;
-                }));
-                timeline.play();
-            }
+                    if (cards[i].button.isVisible())
+                    {
+                        cards[i].button.setDisable(false);
+                    }
+                }
+            }));
+
+            timeline.play();
         }
     }
 
