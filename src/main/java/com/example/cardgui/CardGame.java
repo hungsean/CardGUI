@@ -73,7 +73,7 @@ public class CardGame extends Application {
 
         startButton.setOnAction(e -> 
         {
-            shuffleCards(cards);
+            shuffleCards();
             stage.setScene(gamScene);
         });
         startBox.setSpacing(10);
@@ -88,15 +88,24 @@ public class CardGame extends Application {
         for (int i = 0; i < cards.length; i++) 
         {
             final int index = i;
+            cards[index].cardBack = cardBack;
+            cards[index].checkFace();
             cards[index].button.setOnAction(e -> 
             {
-                cards[index].flipCard();
+                // debug ---
+                System.out.println(index);
+                // debug end ---
+                // cards[index].flipCard();
                 flippedCardNumber++;
                 checkCard(index);
             });
+            
             gridPane.add(cards[index].button, index%2, index/2);
         }
-
+        // debug ---
+        System.out.println(cards[0].cardValue + "|" + cards[1].cardValue);
+        System.out.println(cards[2].cardValue + "|" + cards[3].cardValue);
+        // debug end ---
 
         stage.setTitle("Hello!");
         stage.setScene(startScene);
@@ -107,22 +116,29 @@ public class CardGame extends Application {
         launch();
     }
 
-    public static void shuffleCards(Card[] array)
+    public void shuffleCards()
     {
-        Card temp;
+        int tempInt;
+        Image tempImage;
         int index;
         Random random = new Random();
-        for (int i = array.length - 1; i > 0; i--)
+        for (int i = cards.length - 1; i > 0; i--)
         {
             index = random.nextInt(i + 1);
-            temp = array[index];
-            array[index] = array[i];
-            array[i] = temp;
+            tempInt = cards[index].cardValue;
+            tempImage = cards[index].cardFront;
+            cards[index].cardValue = cards[i].cardValue;
+            cards[index].cardFront = cards[i].cardFront;
+            cards[i].cardValue = tempInt;
+            cards[i].cardFront = tempImage;
+
         }
     }
 
     public void checkCard(int index)
     {
+        cards[index].flipCard();
+        cards[index].button.setDisable(true);
         if (flippedCardNumber == 1)
         {
             firstCardIndex = index;
@@ -145,6 +161,8 @@ public class CardGame extends Application {
                 {
                     cards[firstCardIndex].flipCard();
                     cards[secondCardIndex].flipCard();
+                    cards[firstCardIndex].button.setDisable(false);
+                    cards[secondCardIndex].button.setDisable(false);
                     flippedCardNumber = 0;
                     firstCardIndex = -1;
                     secondCardIndex = -1;
