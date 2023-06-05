@@ -41,9 +41,10 @@ public class CardGame extends Application {
 
     // set game scene
 
+    int score = 0;
+
     GridPane gridPane = new GridPane();
-    Label score = new Label(" / ");
-    VBox gameBox = new VBox(gridPane, score);
+    VBox gameBox = new VBox(gridPane);
     Scene gamScene = new Scene(gameBox);
 
     // set end scene
@@ -92,20 +93,19 @@ public class CardGame extends Application {
             cards[index].checkFace();
             cards[index].button.setOnAction(e -> 
             {
-                // debug ---
-                System.out.println(index);
-                // debug end ---
-                // cards[index].flipCard();
                 flippedCardNumber++;
                 checkCard(index);
+                if (score == cards.length / 2)
+                {
+                    stage.setScene(endScene);
+                }
             });
-            
             gridPane.add(cards[index].button, index%2, index/2);
         }
-        // debug ---
-        System.out.println(cards[0].cardValue + "|" + cards[1].cardValue);
-        System.out.println(cards[2].cardValue + "|" + cards[3].cardValue);
-        // debug end ---
+
+        // set end scene
+
+        
 
         stage.setTitle("Hello!");
         stage.setScene(startScene);
@@ -149,15 +149,22 @@ public class CardGame extends Application {
             secondCardIndex = index;
             if (cards[firstCardIndex].cardValue == cards[secondCardIndex].cardValue)
             {
-                cards[firstCardIndex].button.setVisible(false);
-                cards[secondCardIndex].button.setVisible(false);
-                flippedCardNumber = 0;
-                firstCardIndex = -1;
-                secondCardIndex = -1;
+                score ++;
+                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), e -> 
+                {
+                    cards[firstCardIndex].button.setVisible(false);
+                    cards[secondCardIndex].button.setVisible(false);
+                    flippedCardNumber = 0;
+                    firstCardIndex = -1;
+                    secondCardIndex = -1;
+                }));
+                timeline.play();
+
+                
             }
             else
             {
-                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), e -> 
+                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), e -> 
                 {
                     cards[firstCardIndex].flipCard();
                     cards[secondCardIndex].flipCard();
