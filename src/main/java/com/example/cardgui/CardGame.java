@@ -24,7 +24,6 @@ public class CardGame extends Application {
     
     HashMap<Integer, Image> cardImageMap = new HashMap<Integer,Image>();
     Card cards[];
-    int flippedCardNumber = 0;
     int firstCardIndex = -1, secondCardIndex = -1;
     
     Image cardLion = new Image(getClass().getResourceAsStream("lion_200.jpg"));
@@ -43,10 +42,11 @@ public class CardGame extends Application {
     // set game scene
 
     int score = 0;
-
+    int finishedCardNumber = 0;
+    Label scoreLabel = new Label("Score: " + score);
     GridPane gridPane = new GridPane();
-    VBox gameBox = new VBox(gridPane);
-    Scene gamScene = new Scene(gameBox, 700, 700);
+    VBox gameBox = new VBox(gridPane, scoreLabel);
+    Scene gameScene = new Scene(gameBox, 700, 700);
 
     // set end scene
 
@@ -77,26 +77,41 @@ public class CardGame extends Application {
 
         startButton.setOnAction(e -> 
         {
-            score = 0;
-            flippedCardNumber = 0;
+            score = 10;
             firstCardIndex = -1;
             secondCardIndex = -1;
+            finishedCardNumber = 0;
             for(int i = 0; i < cards.length; i++)
             {
                 final int index = i;
-                cards[index].face = false;
+                cards[index].face = true;
                 cards[index].checkFace();
                 cards[index].button.setDisable(false);
                 cards[index].button.setVisible(true);
 
             }
             shuffleCards();
-            stage.setScene(gamScene);
+            scoreLabel.setText("Score: " + score);
+            stage.setScene(gameScene);
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1500), ev -> 
+            {
+                for(int i = 0; i < cards.length; i++)
+                {
+                    final int index = i;
+                    cards[index].face = false;
+                    cards[index].checkFace();
+                }
+            }));
+            System.out.println("start");
+            timeline.play();
+            System.out.println("end");
         });
         startBox.setSpacing(10);
         startBox.setStyle("-fx-alignment: center;");
 
         // set game scene
+        scoreLabel.setText("Score: " + score);
+        scoreLabel.setStyle("-fx-alignment: center;");
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setHgap(10);
         gridPane.setVgap(10);
@@ -110,8 +125,15 @@ public class CardGame extends Application {
             cards[index].button.setOnAction(e -> 
             {
                 checkCard(index);
-                if (score == cards.length / 2)
+                scoreLabel.setText("Score: " + score);
+                if (finishedCardNumber == cards.length / 2)
                 {
+                    endLabel.setText("Game finished! Your score is " + score);
+                    stage.setScene(endScene);
+                }
+                else if (score < 0)
+                {
+                    endLabel.setText("Game failure!");
                     stage.setScene(endScene);
                 }
             });
@@ -201,7 +223,8 @@ public class CardGame extends Application {
             boolean isSame = cards[firstCardIndex].cardValue == cards[secondCardIndex].cardValue;
             if (isSame)
             {
-                score ++;
+                finishedCardNumber ++;
+                score += 10;
                 cards[firstCardIndex].button.setVisible(false);
                 cards[secondCardIndex].button.setVisible(false);
                 cards[firstCardIndex].flipCard();
@@ -209,7 +232,7 @@ public class CardGame extends Application {
                 
                 return;
             }
-
+            score -= 2;
             Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), e -> 
             {
                 cards[firstCardIndex].flipCard();
