@@ -27,9 +27,10 @@ public class CardGame extends Application {
     int flippedCardNumber = 0;
     int firstCardIndex = -1, secondCardIndex = -1;
     
-    Image cardLion = new Image(getClass().getResourceAsStream("lion.jpg"));
-    Image cardBack = new Image(getClass().getResourceAsStream("blue.jpg"));
-    Image cardApple = new Image(getClass().getResourceAsStream("apple.jpg"));
+    Image cardLion = new Image(getClass().getResourceAsStream("lion_200.jpg"));
+    Image cardBack = new Image(getClass().getResourceAsStream("blue_200.jpg"));
+    Image cardApple = new Image(getClass().getResourceAsStream("apple_200.jpg"));
+    Image cardGoat = new Image(getClass().getResourceAsStream("goat_200.jpg"));
     
 
     // set start scene
@@ -59,8 +60,10 @@ public class CardGame extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        
         cardImageMap.put(0, cardLion);
         cardImageMap.put(1, cardApple);
+        cardImageMap.put(2, cardGoat);
         cards = new Card[cardImageMap.size() * 2];
         for (int i = 0; i < cards.length; i++) 
         {
@@ -106,14 +109,14 @@ public class CardGame extends Application {
             cards[index].checkFace();
             cards[index].button.setOnAction(e -> 
             {
-                flippedCardNumber++;
                 checkCard(index);
                 if (score == cards.length / 2)
                 {
                     stage.setScene(endScene);
                 }
             });
-            gridPane.add(cards[index].button, index%2, index/2);
+            cards[index].button.setPrefSize(100, 200);
+            gridPane.add(cards[index].button, index/2, index%2);
         }
         gameBox.setSpacing(10);
         gameBox.setStyle("-fx-alignment: center;");
@@ -164,49 +167,116 @@ public class CardGame extends Application {
 
     public void checkCard(int index)
     {
-        cards[index].flipCard();
-        cards[index].button.setDisable(true);
-        if (flippedCardNumber == 1)
+        int cardFaceOnNumber = 0;
+        for(int i = 0; i < cards.length; i++)
         {
+            if (cards[i].face == true)
+            {
+                cardFaceOnNumber ++;
+            }
+        }
+        System.out.println(cardFaceOnNumber);
+        if (cardFaceOnNumber >= 2) 
+        {
+            
+            return;
+        }
+            
+        else if (cardFaceOnNumber == 0)
+        {
+            cards[index].flipCard();
             firstCardIndex = index;
             return;
         }
-        else if (flippedCardNumber == 2)
+        else if (cardFaceOnNumber == 1 && firstCardIndex == index)
         {
-            for(int i = 0; i < cards.length; i++)
-            {
-                cards[i].button.setDisable(true);
-            }
+            cards[index].flipCard();
+            firstCardIndex = -1;
+            return;
+        }
+        else if (cardFaceOnNumber == 1 && firstCardIndex != index)
+        {
+            cards[index].flipCard();
             secondCardIndex = index;
             boolean isSame = cards[firstCardIndex].cardValue == cards[secondCardIndex].cardValue;
             if (isSame)
             {
                 score ++;
+                cards[firstCardIndex].button.setVisible(false);
+                cards[secondCardIndex].button.setVisible(false);
+                cards[firstCardIndex].flipCard();
+                cards[secondCardIndex].flipCard();
+                
+                return;
             }
 
             Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), e -> 
             {
-                if (isSame)
-                {
-                    cards[firstCardIndex].button.setVisible(false);
-                    cards[secondCardIndex].button.setVisible(false);
-                }
                 cards[firstCardIndex].flipCard();
                 cards[secondCardIndex].flipCard();
-                flippedCardNumber = 0;
+                
                 firstCardIndex = -1;
                 secondCardIndex = -1;
-                for(int i = 0; i < cards.length; i++)
-                {
-                    if (cards[i].button.isVisible())
-                    {
-                        cards[i].button.setDisable(false);
-                    }
-                }
             }));
-
             timeline.play();
         }
+
+
+
+
+
+        // if (flippedCardNumber >= 2) return;
+        // if (cards[index].face)
+        // {
+        //     flippedCardNumber --;
+        // }
+        // else
+        // {
+        //     flippedCardNumber ++;
+        // }
+        // if (flippedCardNumber == 1)
+        // {
+        //     firstCardIndex = index;
+        //     cards[index].flipCard();
+        //     return;
+        // }
+        // else if (flippedCardNumber == 2)
+        // {
+        //     cards[index].flipCard();
+        //     for(int i = 0; i < cards.length; i++)
+        //     {
+        //         // cards[i].button.setDisable(true);
+        //     }
+        //     secondCardIndex = index;
+        //     boolean isSame = cards[firstCardIndex].cardValue == cards[secondCardIndex].cardValue;
+        //     if (isSame)
+        //     {
+        //         score ++;
+        //     }
+
+        //     Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), e -> 
+        //     {
+        //         if (isSame)
+        //         {
+        //             cards[firstCardIndex].button.setVisible(false);
+        //             cards[secondCardIndex].button.setVisible(false);
+        //         }
+        //         cards[firstCardIndex].flipCard();
+        //         cards[secondCardIndex].flipCard();
+        //         flippedCardNumber = 0;
+        //         firstCardIndex = -1;
+        //         secondCardIndex = -1;
+        //         for(int i = 0; i < cards.length; i++)
+        //         {
+        //             if (cards[i].button.isVisible())
+        //             {
+        //                 cards[i].button.setDisable(false);
+        //             }
+        //         }
+        //     }));
+
+        //     timeline.play();
+        // }
     }
 
 }
