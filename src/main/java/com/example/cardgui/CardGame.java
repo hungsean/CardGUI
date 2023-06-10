@@ -172,7 +172,6 @@ public class CardGame extends Application {
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setHgap(10);
         gridPane.setVgap(10);
-        int scoreNumber = 0;
 
         for (int i = 0; i < cards.length; i++) 
         {
