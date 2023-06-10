@@ -93,7 +93,7 @@ public class CardGame extends Application {
             if (SlowRadioButton.isSelected())
             {
                 System.out.println("set slow");
-                speed = 2000;
+                speed = 1500;
                 MediumRadioButton.setSelected(false);
                 FastRadioButton.setSelected(false);
                 startButton.setDisable(false);
@@ -140,6 +140,18 @@ public class CardGame extends Application {
             firstCardIndex = -1;
             secondCardIndex = -1;
             finishedCardNumber = 0;
+            shuffleCards();
+            scoreLabel.setText("Score: " + score);
+            stage.setScene(gameScene);
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(speed * 1.5), time -> 
+            {
+                for(int i = 0; i < cards.length; i++)
+                {
+                    final int index = i;
+                    cards[index].face = false;
+                    cards[index].checkFace();
+                }
+            }));
             for(int i = 0; i < cards.length; i++)
             {
                 final int index = i;
@@ -149,21 +161,7 @@ public class CardGame extends Application {
                 cards[index].button.setVisible(true);
 
             }
-            shuffleCards();
-            scoreLabel.setText("Score: " + score);
-            stage.setScene(gameScene);
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(speed * 1.5), ev -> 
-            {
-                for(int i = 0; i < cards.length; i++)
-                {
-                    final int index = i;
-                    cards[index].face = false;
-                    cards[index].checkFace();
-                }
-            }));
-            System.out.println("start");
             timeline.play();
-            System.out.println("end");
         });
         startBox.setSpacing(10);
         startBox.setStyle("-fx-alignment: center;");
@@ -292,7 +290,7 @@ public class CardGame extends Application {
                 return;
             }
             score -= 2;
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(speed), e -> 
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(speed *0.5), e -> 
             {
                 cards[firstCardIndex].flipCard();
                 cards[secondCardIndex].flipCard();
@@ -303,62 +301,6 @@ public class CardGame extends Application {
             timeline.play();
         }
 
-
-
-
-
-        // if (flippedCardNumber >= 2) return;
-        // if (cards[index].face)
-        // {
-        //     flippedCardNumber --;
-        // }
-        // else
-        // {
-        //     flippedCardNumber ++;
-        // }
-        // if (flippedCardNumber == 1)
-        // {
-        //     firstCardIndex = index;
-        //     cards[index].flipCard();
-        //     return;
-        // }
-        // else if (flippedCardNumber == 2)
-        // {
-        //     cards[index].flipCard();
-        //     for(int i = 0; i < cards.length; i++)
-        //     {
-        //         // cards[i].button.setDisable(true);
-        //     }
-        //     secondCardIndex = index;
-        //     boolean isSame = cards[firstCardIndex].cardValue == cards[secondCardIndex].cardValue;
-        //     if (isSame)
-        //     {
-        //         score ++;
-        //     }
-
-        //     Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), e -> 
-        //     {
-        //         if (isSame)
-        //         {
-        //             cards[firstCardIndex].button.setVisible(false);
-        //             cards[secondCardIndex].button.setVisible(false);
-        //         }
-        //         cards[firstCardIndex].flipCard();
-        //         cards[secondCardIndex].flipCard();
-        //         flippedCardNumber = 0;
-        //         firstCardIndex = -1;
-        //         secondCardIndex = -1;
-        //         for(int i = 0; i < cards.length; i++)
-        //         {
-        //             if (cards[i].button.isVisible())
-        //             {
-        //                 cards[i].button.setDisable(false);
-        //             }
-        //         }
-        //     }));
-
-        //     timeline.play();
-        // }
     }
 
 }
