@@ -7,9 +7,11 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -25,6 +27,7 @@ public class CardGame extends Application {
     HashMap<Integer, Image> cardImageMap = new HashMap<Integer,Image>();
     Card cards[];
     int firstCardIndex = -1, secondCardIndex = -1;
+    int speed = 1000;
     
     Image cardLion = new Image(getClass().getResourceAsStream("lion_200.jpg"));
     Image cardBack = new Image(getClass().getResourceAsStream("blue_200.jpg"));
@@ -35,8 +38,15 @@ public class CardGame extends Application {
     // set start scene
 
     Label welcome = new Label("Welcome to card game!");
+
+    TilePane speedPane = new TilePane();
+    Label speedLabel = new Label("Please choose the speed:");
+    RadioButton SlowRadioButton = new RadioButton("slow");
+    RadioButton MediumRadioButton = new RadioButton("medium");
+    RadioButton FastRadioButton = new RadioButton("fast");
+
     Button startButton = new Button("Start");
-    VBox startBox = new VBox(welcome, startButton);
+    VBox startBox = new VBox(welcome, speedLabel, speedPane, startButton);
     Scene startScene = new Scene(startBox, 700, 700);
 
     // set game scene
@@ -75,6 +85,55 @@ public class CardGame extends Application {
 
         // set start scene
 
+        speedPane.getChildren().addAll(SlowRadioButton, MediumRadioButton, FastRadioButton);
+        speedPane.setStyle("-fx-alignment: center;");
+        startButton.setDisable(true);
+        SlowRadioButton.setOnAction(e -> 
+        {
+            if (SlowRadioButton.isSelected())
+            {
+                System.out.println("set slow");
+                speed = 2000;
+                MediumRadioButton.setSelected(false);
+                FastRadioButton.setSelected(false);
+                startButton.setDisable(false);
+            }
+            else
+            {
+                SlowRadioButton.setSelected(true);
+            }
+        });
+        MediumRadioButton.setOnAction(e -> 
+        {
+            if (MediumRadioButton.isSelected())
+            {
+                System.out.println("set medium");
+                speed = 1000;
+                SlowRadioButton.setSelected(false);
+                FastRadioButton.setSelected(false);
+                startButton.setDisable(false);
+            }
+            else
+            {
+                MediumRadioButton.setSelected(true);
+            }
+        });
+        FastRadioButton.setOnAction(e -> 
+        {
+            if (FastRadioButton.isSelected())
+            {
+                System.out.println("set fast");
+                speed = 500;
+                SlowRadioButton.setSelected(false);
+                MediumRadioButton.setSelected(false);
+                startButton.setDisable(false);
+            }
+            else
+            {
+                FastRadioButton.setSelected(true);
+            }
+        });
+
         startButton.setOnAction(e -> 
         {
             score = 10;
@@ -93,7 +152,7 @@ public class CardGame extends Application {
             shuffleCards();
             scoreLabel.setText("Score: " + score);
             stage.setScene(gameScene);
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1500), ev -> 
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(speed * 1.5), ev -> 
             {
                 for(int i = 0; i < cards.length; i++)
                 {
@@ -233,7 +292,7 @@ public class CardGame extends Application {
                 return;
             }
             score -= 2;
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1000), e -> 
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(speed), e -> 
             {
                 cards[firstCardIndex].flipCard();
                 cards[secondCardIndex].flipCard();
